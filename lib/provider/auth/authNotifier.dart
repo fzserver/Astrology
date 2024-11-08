@@ -90,7 +90,9 @@ class AuthNotifier with ChangeNotifier {
       var decoded = JwtDecoder.decode(token);
       Constants.email = decoded['email'];
 
-      _state = AuthState.authenticated;
+      _state = AuthState.verification;
+
+      getIt<ConfigRouter>().replaceAll([VerificationRouter()]);
 
       notifyListeners();
     } catch (e) {
@@ -127,11 +129,12 @@ class AuthNotifier with ChangeNotifier {
 
         await _tokenChecker.checkToken();
 
-        if (_tokenChecker.isLoggedIn) {
+        if (_tokenChecker.isAuthenticated) {
           getIt<ConfigRouter>().replaceAll([DashboardRouter()]);
         }
       } else {
-        getIt<ConfigRouter>().replaceAll([DashboardRouter()]);
+        _state = AuthState.verification;
+        getIt<ConfigRouter>().replaceAll([VerificationRouter()]);
       }
       notifyListeners();
     } catch (e) {

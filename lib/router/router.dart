@@ -13,5 +13,7 @@ class ConfigRouter extends RootStackRouter {
     AutoRoute(page: DashboardRouter.page),
     AutoRoute(page: HomeRouter.page),
     AutoRoute(page: ForgotRouter.page),
+    AutoRoute(page: RegisterRouter.page),
+    AutoRoute(page: VerificationRouter.page),
   ];
 }

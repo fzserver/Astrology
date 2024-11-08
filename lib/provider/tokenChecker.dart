@@ -7,7 +7,7 @@ class TokenChecker with ChangeNotifier {
   TokenChecker();
   bool _isLoggedIn = true;
 
-  bool get isLoggedIn => _isLoggedIn;
+  bool get isAuthenticated => _isLoggedIn;
 
   Future<void> checkToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -1,11 +1,12 @@
-import 'package:astrology/getit.dart';
-import 'package:astrology/router/router.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/auth/authNotifier.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../constants/colors.dart';
-import '../../router/router.gr.dart';
 
 @RoutePage(name: 'DashboardRouter')
 class Dashboard extends StatefulWidget {
@@ -60,6 +61,48 @@ class _DashboardState extends State<Dashboard> {
     super.dispose();
   }
 
+  void _logout(BuildContext context) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog.adaptive(
+        title: Text(
+          'Logout',
+          style: GoogleFonts.josefinSans(
+            color: CupertinoColors.destructiveRed,
+          ),
+        ),
+        content: const Text('Do you really want to logout?'),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            /// This parameter indicates this action is the default,
+            /// and turns the action's text to bold text.
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.josefinSans(
+                color: CupertinoColors.black,
+              ),
+            ),
+          ),
+          CupertinoDialogAction(
+            /// This parameter indicates the action would perform
+            /// a destructive action such as deletion, and turns
+            /// the action's text color to red.
+            isDestructiveAction: true,
+            onPressed: () {
+              // Navigator.pop(context);
+              Provider.of<AuthNotifier>(context, listen: false).logout();
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,9 +113,7 @@ class _DashboardState extends State<Dashboard> {
         foregroundColor: FzColors.textColor,
         actions: [
           IconButton(
-            onPressed: () => getIt<ConfigRouter>().replaceAll(
-              [HomeRouter()],
-            ),
+            onPressed: () => _logout(context),
             icon: Icon(Icons.logout),
           ),
         ],

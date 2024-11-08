@@ -1,40 +1,48 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/colors.dart';
+import '../../constants/constants.dart';
+import '../../gen/assets.gen.dart';
 import '../../getit.dart';
 import '../../provider/auth/authNotifier.dart';
 import '../../provider/auth/authState.dart';
 import '../../router/router.dart';
-import 'package:auto_route/auto_route.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../../constants/colors.dart';
-import 'package:flutter/material.dart';
-
-import '../../gen/assets.gen.dart';
 import '../../router/router.gr.dart';
 import '../../validations/fzvalidations.dart';
 
-@RoutePage(name: 'ForgotRouter')
-class Forgot extends StatefulWidget {
-  const Forgot({super.key});
+@RoutePage(name: 'RegisterRouter')
+class Register extends StatefulWidget {
+  const Register({super.key});
 
   @override
-  State<Forgot> createState() => _ForgotState();
+  State<Register> createState() => _RegisterState();
 }
 
-class _ForgotState extends State<Forgot> {
+class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
+  late FocusNode _passwordFocusNode;
+  late FocusNode _emailFocusNode;
+  bool _obscure = true;
   String _email = '';
+  String _password = '';
 
   @override
   void initState() {
+    _emailFocusNode = FocusNode();
+    _passwordFocusNode = FocusNode();
+    Provider.of<AuthNotifier>(context, listen: false).clearAll();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
   }
 
   @override
@@ -43,16 +51,11 @@ class _ForgotState extends State<Forgot> {
     final width = mq.size.width;
     final height = mq.size.height;
     return Scaffold(
-      backgroundColor: FzColors.appColor,
-      appBar: AppBar(
-        backgroundColor: FzColors.appColor,
-        foregroundColor: FzColors.textColor,
-        elevation: 0.0,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
+      backgroundColor: FzColors.blackColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
               child: Column(
@@ -66,7 +69,7 @@ class _ForgotState extends State<Forgot> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
-                          Assets.forgot.path,
+                          Assets.astrology.path,
                         ),
                         fit: BoxFit.contain,
                       ),
@@ -76,26 +79,25 @@ class _ForgotState extends State<Forgot> {
                     height: 20.0,
                   ),
                   Text(
-                    "Forgot Password",
+                    Constants.appName + ' ' + 'Register',
                     style: GoogleFonts.josefinSans(
                       color: FzColors.hexToColor('#FDC830'),
                       fontSize: 32.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
+                  SizedBox(height: 20),
                   TextFormField(
+                    focusNode: _emailFocusNode,
                     decoration: InputDecoration(
                       hintText: "Enter your email",
-                      hintStyle: GoogleFonts.josefinSans(color: Colors.white70),
+                      hintStyle: GoogleFonts.josefinSans(
+                        color: FzColors.hexToColor('#FDC830'),
+                      ),
                       filled: true,
                       fillColor: Colors.white10,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          10.0,
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       prefixIcon: Icon(
                         Icons.email_outlined,
@@ -110,6 +112,54 @@ class _ForgotState extends State<Forgot> {
                     style: GoogleFonts.josefinSans(color: Colors.white),
                     validator: (value) => FzValidation.emailValidator(value),
                   ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    obscureText: _obscure,
+                    focusNode: _passwordFocusNode,
+                    decoration: InputDecoration(
+                      hintText: "Enter your password",
+                      hintStyle: GoogleFonts.josefinSans(
+                        color: FzColors.hexToColor('#FDC830'),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white10,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          10.0,
+                        ),
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _obscure = !_obscure;
+                          });
+                        },
+                        icon: Icon(
+                          _obscure ? Icons.visibility_off : Icons.visibility,
+                          color: FzColors.hexToColor('#FDC830'),
+                        ),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.lock_outline,
+                        color: FzColors.hexToColor('#FDC830'),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _password = value;
+                      });
+                    },
+                    style: GoogleFonts.josefinSans(
+                      color: Colors.white,
+                    ),
+                    validator: (value) {
+                      if (value == null || value == '') {
+                        return 'Password can\'t be empty.';
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
                   SizedBox(
                     height: 20.0,
                   ),
@@ -117,9 +167,7 @@ class _ForgotState extends State<Forgot> {
                     builder: (context, authNotifier, _) => Center(
                       child: authNotifier.state == AuthState.loading
                           ? CircularProgressIndicator(
-                              color: FzColors.hexToColor(
-                                '#FDC830',
-                              ),
+                              color: FzColors.hexToColor('#FDC830'),
                             )
                           : MaterialButton(
                               onPressed: authNotifier.state == AuthState.loading
@@ -128,11 +176,14 @@ class _ForgotState extends State<Forgot> {
                                       SystemChannels.textInput
                                           .invokeMethod('TextInput.hide');
                                       if (_formKey.currentState!.validate()) {
-                                        authNotifier.forgotPassword(_email);
+                                        authNotifier.signup(
+                                          _email,
+                                          _password,
+                                        );
                                       }
                                     },
                               child: Text(
-                                "Reset My Password",
+                                "Register",
                                 style: GoogleFonts.josefinSans(
                                   fontSize: 18.0,
                                   color: FzColors.blackColor,
@@ -146,33 +197,26 @@ class _ForgotState extends State<Forgot> {
                             ),
                     ),
                   ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
                   TextButton(
-                    onPressed: () => getIt<ConfigRouter>().popForced(),
+                    onPressed: () => getIt<ConfigRouter>().push(ForgotRouter()),
                     child: Text(
-                      "Back to Login",
+                      "Forgot Password?",
                       style: GoogleFonts.josefinSans(
-                        color: Colors.amber,
-                        fontSize: 16.0,
+                        color: FzColors.hexToColor('#FDC830'),
                       ),
                     ),
                   ),
-                  Consumer<AuthNotifier>(
-                    builder: (context, authNotifier, _) {
-                      if (authNotifier.state == AuthState.error) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
-                          child: Center(
-                            child: Text(
-                              authNotifier.error!,
-                              style: GoogleFonts.josefinSans(
-                                color: Colors.red,
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                      return SizedBox.shrink();
-                    },
+                  TextButton(
+                    onPressed: () => getIt<ConfigRouter>().popForced(),
+                    child: Text(
+                      "Back to login",
+                      style: GoogleFonts.josefinSans(
+                        color: FzColors.hexToColor('#FDC830'),
+                      ),
+                    ),
                   ),
                 ],
               ),

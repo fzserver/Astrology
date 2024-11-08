@@ -9,13 +9,32 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsJsonGen {
+  const $AssetsJsonGen();
+
+  /// File path: assets/json/loading.json
+  String get loading => 'assets/json/loading.json';
+
+  /// File path: assets/json/thanks.json
+  String get thanks => 'assets/json/thanks.json';
+
+  /// File path: assets/json/verify.json
+  String get verify => 'assets/json/verify.json';
+
+  /// List of all assets
+  List<String> get values => [loading, thanks, verify];
+}
+
 class Assets {
   Assets._();
 
+  static const AssetGenImage astrology = AssetGenImage('assets/astrology.png');
   static const AssetGenImage bg = AssetGenImage('assets/bg.jpg');
+  static const AssetGenImage forgot = AssetGenImage('assets/forgot.png');
+  static const $AssetsJsonGen json = $AssetsJsonGen();
 
   /// List of all assets
-  static List<AssetGenImage> get values => [bg];
+  static List<AssetGenImage> get values => [astrology, bg, forgot];
 }
 
 class AssetGenImage {
